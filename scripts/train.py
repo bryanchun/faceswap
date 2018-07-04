@@ -9,6 +9,7 @@ import threading
 import cv2
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session, get_session
+from keras.callbacks import Tensorboard
 
 from lib.utils import get_folder, get_image_paths, set_system_verbosity
 from plugins.PluginLoader import PluginLoader
@@ -119,9 +120,7 @@ class Train(object):
 
     def run_training_cycle(self, model, trainer):
         """ Perform the training cycle """
-        logs_path = './logs/'
-        writer = tf.summary.FileWriter(logs_path)
-        writer.add_graph(get_session().graph)
+       TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32, write_graph=True, write_grads=False, write_images=False, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None, embeddings_data=None) 
         for epoch in range(0, self.args.epochs):
             save_iteration = epoch % self.args.save_interval == 0
             viewer = self.show if save_iteration or self.save_now else None
@@ -135,7 +134,6 @@ class Train(object):
                 self.save_now = False
         model.save_weights()
         self.stop = True
-        tf.Session().run()
 
     def monitor_preview(self):
         """ Generate the preview window and wait for keyboard input """
