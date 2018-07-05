@@ -11,6 +11,7 @@ class AutoEncoder:
         self.model_dir = model_dir
         self.gpus = gpus
 
+	# As ABC Declarations for child
         self.encoder = self.Encoder()
         self.decoder_A = self.Decoder()
         self.decoder_B = self.Decoder()
@@ -19,7 +20,8 @@ class AutoEncoder:
 
     def load(self, swapped):
         (face_A,face_B) = (hdf['decoder_AH5'], hdf['decoder_BH5']) if not swapped else (hdf['decoder_BH5'], hdf['decoder_AH5'])
-
+	
+	# keras.models.Model.load_weights
         try:
             self.encoder.load_weights(str(self.model_dir / hdf['encoderH5']))
             self.decoder_A.load_weights(str(self.model_dir / face_A))
@@ -35,7 +37,8 @@ class AutoEncoder:
         model_dir = str(self.model_dir)
         for model in hdf.values():
             backup_file(model_dir, model)
-        self.encoder.save_weights(str(self.model_dir / hdf['encoderH5']))
+        # keras.models.Model.save_weights
+	self.encoder.save_weights(str(self.model_dir / hdf['encoderH5']))
         self.decoder_A.save_weights(str(self.model_dir / hdf['decoder_AH5']))
         self.decoder_B.save_weights(str(self.model_dir / hdf['decoder_BH5']))
         print('saved model weights')
