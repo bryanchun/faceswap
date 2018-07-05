@@ -2,14 +2,16 @@
 """ The script to run the training process of faceswap """
 
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+if os.uname()[1] in ['dsrootde-Mac-mini.local', 'ds16']
+    os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+    # elif os.uame()[1] == '': pass and use all gpus
 import sys
 import threading
 
 import cv2
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session, get_session
-from keras.callbacks import Tensorboard
+from keras.callbacks import TensorBoard
 
 from lib.utils import get_folder, get_image_paths, set_system_verbosity
 from plugins.PluginLoader import PluginLoader
@@ -120,7 +122,7 @@ class Train(object):
 
     def run_training_cycle(self, model, trainer):
         """ Perform the training cycle """
-       TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32, write_graph=True, write_grads=False, write_images=False, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None, embeddings_data=None) 
+        TensorBoard(log_dir='./logs', histogram_freq=0, batch_size=32, write_graph=True, write_grads=False, write_images=False, embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None, embeddings_data=None) 
         for epoch in range(0, self.args.epochs):
             save_iteration = epoch % self.args.save_interval == 0
             viewer = self.show if save_iteration or self.save_now else None
