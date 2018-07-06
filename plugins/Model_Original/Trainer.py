@@ -31,7 +31,7 @@ class Trainer():
         
         root_path = os.path.abspath(os.path.dirname(__file__))
         path = os.path.join(root_path, "../../logs/test.txt")
-        with open(path) as log:
+        with open(path, 'a') as log:
             log.write("{}\t{}\n".format(loss_A, loss_B))
 
         if viewer is not None:
