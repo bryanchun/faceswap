@@ -27,8 +27,10 @@ class Trainer():
         loss_B = self.model.autoencoder_B.train_on_batch(warped_B, target_B)
         print("[{0}] [#{1:05d}] loss_A: {2:.5f}, loss_B: {3:.5f}".format(time.strftime("%H:%M:%S"), iter, loss_A, loss_B),
             end='\r')
-
-        with ('./logs/test.txt', 'a') as log:
+        
+        root_path = os.path.abspath(os.path.dirname(__file__))
+        path = os.path.join(root_path, "../../logs/test.txt")
+        with (path) as log:
             log.write("{}\t{}\n".format(loss_A, loss_B))
 
         if viewer is not None:
