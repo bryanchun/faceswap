@@ -1,10 +1,10 @@
 #!/usr/bin python3
 """ The script to run the training process of faceswap """
 
-import os
-if os.uname()[1] in ['dsrootde-Mac-mini.local', 'ds16']:
-    os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-    # elif os.uame()[1] == 'BryanUbuntu16Tesla': pass and use all gpus
+#import os
+#if os.uname()[1] in ['dsrootde-Mac-mini.local', 'ds16', 'ds18-tesla']:
+#    os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+#    # elif os.uame()[1] == 'BryanUbuntu16Tesla': pass and use all gpus
 import sys
 import threading
 
