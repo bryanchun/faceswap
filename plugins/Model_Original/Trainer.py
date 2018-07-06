@@ -1,6 +1,7 @@
 
 import time
 import numpy
+import os.path
 from lib.training_data import TrainingDataGenerator, stack_images
 
 class Trainer():
