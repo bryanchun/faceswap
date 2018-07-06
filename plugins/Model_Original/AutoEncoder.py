@@ -38,7 +38,8 @@ class AutoEncoder:
         for model in hdf.values():
             backup_file(model_dir, model)
         # keras.models.Model.save_weights
-	self.encoder.save_weights(str(self.model_dir / hdf['encoderH5']))
+
+        self.encoder.save_weights(str(self.model_dir / hdf['encoderH5']))
         self.decoder_A.save_weights(str(self.model_dir / hdf['decoder_AH5']))
         self.decoder_B.save_weights(str(self.model_dir / hdf['decoder_BH5']))
         print('saved model weights')

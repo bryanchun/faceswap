@@ -22,11 +22,14 @@ class Trainer():
     def train_one_step(self, iter, viewer):
         epoch, warped_A, target_A = next(self.images_A)
         epoch, warped_B, target_B = next(self.images_B)
-
+        
         loss_A = self.model.autoencoder_A.train_on_batch(warped_A, target_A)
         loss_B = self.model.autoencoder_B.train_on_batch(warped_B, target_B)
         print("[{0}] [#{1:05d}] loss_A: {2:.5f}, loss_B: {3:.5f}".format(time.strftime("%H:%M:%S"), iter, loss_A, loss_B),
             end='\r')
+
+        with ('./logs/test.txt', 'a') as log:
+            log.write("{}\t{}\n".format(loss_A, loss_B))
 
         if viewer is not None:
             viewer(self.show_sample(target_A[0:14], target_B[0:14]), "training")
