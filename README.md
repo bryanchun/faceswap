@@ -127,3 +127,7 @@ Here's a slightly more in depth video that tries to explain the basic functionin
 [![How Machines Learn](https://img.youtube.com/vi/aircAruvnKk/0.jpg)](https://www.youtube.com/watch?v=aircAruvnKk)
 
 tl;dr: training data + trial and error
+
+# Credits
+
+https://github.com/deepfakes/faceswap
