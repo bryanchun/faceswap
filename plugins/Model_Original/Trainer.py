@@ -3,6 +3,7 @@ import time
 import numpy
 import os.path
 from lib.training_data import TrainingDataGenerator, stack_images
+import tensorflow as tf
 
 class Trainer():
     random_transform_args = {
@@ -18,9 +19,9 @@ class Trainer():
 
         generator = TrainingDataGenerator(self.random_transform_args, 160)
         self.images_A = generator.minibatchAB(fn_A, self.batch_size)
-        self.images_B = generator.minibatchAB(fn_B, self.batch_size)
+        self.images_B = generator.minibatchAB(fn_B, self.batch_size)  
 
-    def train_one_step(self, iter, viewer):
+    def train_one_step(self, iter, viewer, callback):
         epoch, warped_A, target_A = next(self.images_A)
         epoch, warped_B, target_B = next(self.images_B)
         
@@ -28,11 +29,14 @@ class Trainer():
         loss_B = self.model.autoencoder_B.train_on_batch(warped_B, target_B)
         print("[{0}] [#{1:05d}] loss_A: {2:.5f}, loss_B: {3:.5f}".format(time.strftime("%H:%M:%S"), iter, loss_A, loss_B),
             end='\r')
+        #train_names_A, train_names_B = ['wraped_A', 'target_A'], ['wraped_B', 'target_B']
+        self.write_log(callback, self.model.autoencoder_A.metrics_names, [loss_A], epoch)
+        self.write_log(callback, self.model.autoencoder_B.metrics_names, [loss_B], epoch)
         
-        root_path = os.path.abspath(os.path.dirname(__file__))
-        path = os.path.join(root_path, "../../logs/test.txt")
-        with open(path, 'a') as log:
-            log.write("{}\t{}\n".format(loss_A, loss_B))
+        #root_path = os.path.abspath(os.path.dirname(__file__))
+        #path = os.path.join(root_path, "../../logs/test.txt")
+        #with open(path, 'a') as log:
+        #    log.write("{}\t{}\n".format(loss_A, loss_B))
 
         if viewer is not None:
             viewer(self.show_sample(target_A[0:14], target_B[0:14]), "training")
@@ -60,3 +64,13 @@ class Trainer():
         figure = stack_images(figure)
 
         return numpy.clip(figure * 255, 0, 255).astype('uint8')
+
+    
+    def write_log(self, callback, names, logs, batch_no):
+        for name, value in zip(names, logs):
+            summary = tf.Summary()
+            summary_value = summary.value.add()
+            summary_value.simple_value = value
+            summary_value.tag = name
+            callback.writer.add_summary(summary, batch_no)
+            callback.writer.flush()

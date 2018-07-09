@@ -9,7 +9,7 @@ import sys
 import threading
 
 import cv2
-import tensorflow as tf
+from time import time
 from keras.backend.tensorflow_backend import set_session, get_session
 from keras.callbacks import TensorBoard
 
@@ -122,11 +122,12 @@ class Train(object):
 
     def run_training_cycle(self, model, trainer):
         """ Perform the training cycle """
-        TensorBoard(log_dir='./logs', histogram_freq=1, batch_size=32, write_graph=True, write_grads=True, write_images=True, embeddings_freq=1, embeddings_layer_names=None, embeddings_metadata=None) 
+        callback = TensorBoard(log_dir='./logs/{}'.format(time())) 
+        callback.set_model(model)
         for epoch in range(0, self.args.epochs):
             save_iteration = epoch % self.args.save_interval == 0
             viewer = self.show if save_iteration or self.save_now else None
-            trainer.train_one_step(epoch, viewer)
+            trainer.train_one_step(epoch, viewer, callback)
             if self.stop:
                 break
             elif save_iteration:
