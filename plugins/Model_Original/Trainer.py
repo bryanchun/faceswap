@@ -29,9 +29,8 @@ class Trainer():
         loss_B = self.model.autoencoder_B.train_on_batch(warped_B, target_B)
         print("[{0}] [#{1:05d}] loss_A: {2:.5f}, loss_B: {3:.5f}".format(time.strftime("%H:%M:%S"), iter, loss_A, loss_B),
             end='\r')
-        #train_names_A, train_names_B = ['wraped_A', 'target_A'], ['wraped_B', 'target_B']
-        self.write_log(callback, self.model.autoencoder_A.metrics_names, [loss_A], epoch)
-        self.write_log(callback, self.model.autoencoder_B.metrics_names, [loss_B], epoch)
+        self.write_log(callback, ['loss_A'], [loss_A], epoch)
+        self.write_log(callback, ['loss_B'], [loss_B], epoch)
         
         #root_path = os.path.abspath(os.path.dirname(__file__))
         #path = os.path.join(root_path, "../../logs/test.txt")
