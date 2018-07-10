@@ -2,6 +2,7 @@
 import time
 import numpy
 from lib.training_data import TrainingDataGenerator, stack_images
+import tensorflow as tf
 
 
 class Trainer():
@@ -20,7 +21,7 @@ class Trainer():
         self.images_A = generator.minibatchAB(fn_A, self.batch_size)
         self.images_B = generator.minibatchAB(fn_B, self.batch_size)
 
-    def train_one_step(self, iter, viewer):
+    def train_one_step(self, iter, viewer, callback):
         epoch, warped_A, target_A = next(self.images_A)
         epoch, warped_B, target_B = next(self.images_B)
 
@@ -28,6 +29,8 @@ class Trainer():
         loss_B = self.model.autoencoder_B.train_on_batch(warped_B, target_B)
         print("[{0}] [#{1:05d}] loss_A: {2:.5f}, loss_B: {3:.5f}".format(time.strftime("%H:%M:%S"), iter, loss_A, loss_B),
             end='\r')
+        self.write_log(callback, ['loss_A'], [loss_A], epoch)
+        self.write_log(callback, ['loss_B'], [loss_B], epoch)
 
         if viewer is not None:
             viewer(self.show_sample(target_A[0:14], target_B[0:14]), "training")
@@ -49,3 +52,12 @@ class Trainer():
         figure = stack_images(figure)
 
         return numpy.clip(figure * 255, 0, 255).astype('uint8')
+    
+    def write_log(self, callback, names, logs, batch_no):
+        for name, value in zip(names, logs):
+            summary = tf.Summary()
+            summary_value = summary.value.add()
+            summary_value.simple_value = value
+            summary_value.tag = name
+            callback.writer.add_summary(summary, batch_no)
+            callback.writer.flush()

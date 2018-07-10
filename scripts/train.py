@@ -122,7 +122,10 @@ class Train(object):
 
     def run_training_cycle(self, model, trainer):
         """ Perform the training cycle """
-        callback = TensorBoard(log_dir='./logs/{}'.format(time())) 
+        callback = TensorBoard(log_dir='./logs/{}'.format(time()))
+#                               histogram_freq=10,
+#                               write_graph=True, write_grads=True, write_images=True,
+#                               embeddings_freq=10 
         callback.set_model(model)
         for epoch in range(0, self.args.epochs):
             save_iteration = epoch % self.args.save_interval == 0

@@ -4,6 +4,7 @@ import time
 import numpy
 
 from lib.training_data import TrainingDataGenerator, stack_images
+import tensorflow as tf
 
 
 TRANSFORM_PRC = 115.
@@ -36,7 +37,7 @@ class Trainer():
         self.generator = generator        
         
 
-    def train_one_step(self, iter_no, viewer):
+    def train_one_step(self, iter_no, viewer, callback):
   
         _, warped_A, target_A = next(self.images_A)
         _, warped_B, target_B = next(self.images_B)
@@ -47,6 +48,8 @@ class Trainer():
         print("[{0}] [#{1:05d}] loss_A: {2:.5f}, loss_B: {3:.5f}".format(
             time.strftime("%H:%M:%S"), iter_no, loss_A, loss_B),
             end='\r')
+        self.write_log(callback, ['loss_A'], [loss_A], _)
+        self.write_log(callback, ['loss_B'], [loss_B], _)
 
         if viewer is not None:
             viewer(self.show_sample(target_A[0:24], target_B[0:24]), "training using {}, bs={}".format(self.model, self.batch_size))
@@ -80,3 +83,12 @@ class Trainer():
     @property
     def random_transform_args(self):
         return self._random_transform_args
+    
+    def write_log(self, callback, names, logs, batch_no):
+        for name, value in zip(names, logs):
+            summary = tf.Summary()
+            summary_value = summary.value.add()
+            summary_value.simple_value = value
+            summary_value.tag = name
+            callback.writer.add_summary(summary, batch_no)
+            callback.writer.flush()

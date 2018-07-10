@@ -149,7 +149,6 @@ class Trainer():
         self.write_log(callback, ['errGA_sum'], [self.errGA_sum], epoch)
         self.write_log(callback, ['errGB_sum'], [self.errGB_sum], epoch)
         self.write_log(callback, ['self.avg_counter'], [self.avg_counter], epoch)
-        print('wrote_log')
 
         if viewer is not None:
             self.show_sample(viewer)
