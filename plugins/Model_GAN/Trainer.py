@@ -113,7 +113,7 @@ class Trainer():
         else:
             return None
 
-    def train_one_step(self, iter, viewer):
+    def train_one_step(self, iter, viewer, callback):
         # ---------------------
         #  Train Discriminators
         # ---------------------
@@ -140,6 +140,16 @@ class Trainer():
         print('[%s] [%d/%s][%d] Loss_DA: %f Loss_DB: %f Loss_GA: %f Loss_GB: %f'
               % (time.strftime("%H:%M:%S"), epoch, "num_epochs", iter, self.errDA_sum/self.avg_counter, self.errDB_sum/self.avg_counter, self.errGA_sum/self.avg_counter, self.errGB_sum/self.avg_counter),
               end='\r')
+        self.write_log(callback, ['errDA'], errDA, epoch)
+        self.write_log(callback, ['errDB'], errDB, epoch)
+        self.write_log(callback, ['errGA'], errGA, epoch)
+        self.write_log(callback, ['errGB'], errGB, epoch)
+        self.write_log(callback, ['errDA_sum'], [self.errDA_sum], epoch)
+        self.write_log(callback, ['errDB_sum'], [self.errDB_sum], epoch)
+        self.write_log(callback, ['errGA_sum'], [self.errGA_sum], epoch)
+        self.write_log(callback, ['errGB_sum'], [self.errGB_sum], epoch)
+        self.write_log(callback, ['self.avg_counter'], [self.avg_counter], epoch)
+        print('wrote_log')
 
         if viewer is not None:
             self.show_sample(viewer)
@@ -258,3 +268,12 @@ class Trainer():
         figure = stack_images(figure)
         figure = np.clip((figure + 1) * 255 / 2, 0, 255).astype('uint8')
         return figure
+
+    def write_log(self, callback, names, logs, batch_no):
+        for name, value in zip(names, logs):
+            summary = tf.Summary()
+            summary_value = summary.value.add()
+            summary_value.simple_value = value
+            summary_value.tag = name
+            callback.writer.add_summary(summary, batch_no)
+            callback.writer.flush()
