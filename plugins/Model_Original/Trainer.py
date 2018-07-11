@@ -31,6 +31,8 @@ class Trainer():
             end='\r')
         self.write_log(callback, ['loss_A'], [loss_A], epoch)
         self.write_log(callback, ['loss_B'], [loss_B], epoch)
+#         self.write_histogram(self.model.autoencoder_A)
+#         self.write_histogram(self.model.autoencoder_B)
         
         #root_path = os.path.abspath(os.path.dirname(__file__))
         #path = os.path.join(root_path, "../../logs/test.txt")
@@ -67,9 +69,26 @@ class Trainer():
     
     def write_log(self, callback, names, logs, batch_no):
         for name, value in zip(names, logs):
-            summary = tf.Summary()
-            summary_value = summary.value.add()
-            summary_value.simple_value = value
-            summary_value.tag = name
-            callback.writer.add_summary(summary, batch_no)
+#             summary = tf.Summary()
+#             summary_value = summary.value.add()
+#             summary_value.simple_value = value
+#             summary_value.tag = name
+            tf.summary.scalar(name, value)
+            callback.writer.add_summary(
+                tf.summary.scalar(name, value),
+                epoch)
             callback.writer.flush()
+    
+    def write_histogram(self, model):    
+        with tf.name_scope(model.name):
+            for layer in model.layers:
+                w = layer.get_weights()
+                print(len(w))
+#                 with tf.name_scope(layer.name):
+#                     if (len(w) > 0):
+#                         print(w)
+#                         print("=========================")
+#                         weight, bias = layer.get_weights()
+#                         tf.summary.histogram('weight', weight)
+#                         tf.summary.histogram('bias', bias)
+                    
